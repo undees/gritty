@@ -27,6 +27,16 @@ module Gritty
         obj.each do |o|
           build o, parent
         end
+      when Struct then
+        container = @graph.autonode obj.class.to_s
+        @graph.edge parent, container
+
+        obj.members.each do |k|
+          v = obj.send k
+          node = @graph.autonode k.inspect
+          @graph.edge container, node
+          build v, node
+        end
       else
         node = obj.inspect
         @graph.edge parent, node

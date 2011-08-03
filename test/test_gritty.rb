@@ -33,4 +33,29 @@ HERE
 
     g.to_s.must_equal expected
   end
+
+  it 'understands Structs' do
+    Foo = Struct.new :bar, :baz
+    g = digraph do
+      input = Foo.new 'quux', 'quuux'
+      builder = NodeBuilder.new self
+      builder.build input, 'root'
+    end
+
+    expected = <<HERE.strip
+digraph 
+  {
+    "node1"              [ label = "Foo"        ];
+    "node2"              [ label = ":bar"       ];
+    "node3"              [ label = ":baz"       ];
+    "root" -> "node1";
+    "node1" -> "node2";
+    "node1" -> "node3";
+    "node2" -> "\\"quux\\"";
+    "node3" -> "\\"quuux\\"";
+  }
+HERE
+
+    g.to_s.must_equal expected
+  end
 end
